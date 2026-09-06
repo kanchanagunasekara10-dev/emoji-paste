@@ -1,0 +1,5 @@
+# robots.txt for emoji-paste.com
+User-agent: *
+Allow: /
+
+Sitemap: https://emoji-paste.com/sitemap.xml
