@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en-US" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Emoji Paste: Copy and Paste Any Emoji</title>
+<meta name="description" content="Copy and paste any emoji in one click. Free emoji keyboard with 1,353 emojis: smileys, animals, food, flags and more. Works on desktop and mobile." />
+<meta name="keywords" content="copy emoji, emoji copy and paste, emoji keyboard, copy and paste emojis, emoji picker, emoji search, emojis, smiley faces, emoji list" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="author" content="Emoji Paste" />
+<meta name="application-name" content="Emoji Paste" />
+<meta name="theme-color" content="#F7F7F7" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#323643" media="(prefers-color-scheme: dark)" />
+
+<link rel="canonical" href="https://emoji-paste.com/" />
+<link rel="alternate" hreflang="en-us" href="https://emoji-paste.com/" />
+<link rel="alternate" hreflang="x-default" href="https://emoji-paste.com/" />
+
+
+<!-- Open Graph (Facebook, LinkedIn, iMessage, WhatsApp) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Emoji Paste" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="Emoji Paste: Copy &amp; Emoji Pastes in One Click" />
+<meta property="og:description" content="Free online emoji keyboard. Search 1,353 emojis, click to copy, and paste anywhere. Works on desktop and mobile." />
+<meta property="og:url" content="https://emoji-paste.com/" />
+<meta property="og:image" content="https://emoji-paste.com/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Emoji Paste: click any emoji to copy it" />
+
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Emoji Paste: Copy &amp; Emoji Pastes in One Click" />
+<meta name="twitter:description" content="Free online emoji keyboard. Search 1,353 emojis, click to copy, and paste anywhere." />
+<meta name="twitter:image" content="https://emoji-paste.com/og-image.png" />
+
+<!-- Emoji favicon -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A4%AA%3C/text%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+<!-- Structured data: helps Google understand the app -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Emoji Paste",
+  "url": "https://emoji-paste.com/",
+  "description": "Free online emoji keyboard. Search 1,353 emojis, click to copy, and paste them anywhere. Browse by category and reuse recent picks.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any (web browser)",
+  "browserRequirements": "Requires JavaScript",
+  "inLanguage": "en-US",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "One-click copy to clipboard",
+    "Real-time emoji search",
+    "Browse by category",
+    "Recently used emojis",
+    "Dark and light mode",
+    "Keyboard navigation"
+  ]
+}
+</script>
+<style>
+  /* ---------- Design tokens (from the brief) ---------- */
+  :root {
+    --bg: #F7F7F7;
+    --surface: #FFFFFF;
+    --surface-2: #FFFFFF;
+    --border: #E6E6E9;
+    --border-strong: #D6D6DB;
+    --text: #1B1D24;
+    --text-muted: #6B6F7B;
+    --accent: #93DEFF;
+    --accent-ink: #0E5A78;
+    --hover: #EEEFF2;
+    --shadow: 0 1px 2px rgba(20, 22, 30, .05), 0 8px 24px rgba(20, 22, 30, .06);
+    --radius: 12px;
+    --radius-sm: 9px;
+  }
+  [data-theme="dark"] {
+    --bg: #323643;
+    --surface: #3B4050;
+    --surface-2: #363B49;
+    --border: #454B5C;
+    --border-strong: #515869;
+    --text: #EDEFF4;
+    --text-muted: #A2A8B8;
+    --accent: #93DEFF;
+    --accent-ink: #0B2530;
+    --hover: #434A5C;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 10px 30px rgba(0, 0, 0, .28);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; animation: none !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    transition: background .25s ease, color .25s ease;
+  }
+
+  /* Flag fix: Chrome/Edge on Windows have no country-flag glyphs and show
+     letter pairs (e.g. "US") instead. This subset webfont supplies the flags.
+     The unicode-range scopes it to flag codepoints only, so every other emoji
+     keeps rendering with the native system font. Systems that already show
+     flags (macOS, iOS, Android, Linux, Firefox) never download it. */
+  @font-face {
+    font-family: "Twemoji Country Flags";
+    unicode-range: U+1F1E6-1F1FF, U+1F3F4, U+E0062-E0063, U+E0065, U+E0067, U+E006C, U+E006E, U+E0073-E0074, U+E0077, U+E007F;
+    src: url("https://cdn.jsdelivr.net/npm/country-flag-emoji-polyfill@0.1/dist/TwemojiCountryFlags.woff2") format("woff2");
+    font-display: swap;
+  }
+  .emoji {
+    font-family: "Twemoji Country Flags", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", sans-serif;
+  }
+
+  /* ---------- Header ---------- */
+  header.site {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    user-select: none;
+  }
+  .logo img {
+    height: 40px;
+    width: auto;
+    display: block;
+    border-radius: 6px;
+  }
+  .logo { text-decoration: none; display: block; }
+  @media (max-width: 560px) {
+    .header-inner { gap: 8px; padding: 10px 12px; }
+    .logo img { height: 28px; }
+    .theme-toggle { padding: 7px 10px; }
+    .theme-toggle #themeLabel, .theme-toggle span:last-child { display: none; }
+  }
+  .spacer { flex: 1; }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    font: inherit;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .theme-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .theme-toggle .icon { font-size: 1rem; line-height: 1; }
+
+  /* ---------- Search ---------- */
+  .search-wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 20px 8px;
+  }
+  .search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 2px solid var(--border-strong);
+    border-radius: 14px;
+    padding: 4px 4px 4px 16px;
+    box-shadow: var(--shadow);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .search-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  .search-box .search-icon { font-size: 1.1rem; color: var(--text-muted); }
+  #search {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 1.05rem;
+    padding: 14px 12px;
+    outline: none;
+    min-width: 0;
+  }
+  #search::placeholder { color: var(--text-muted); }
+  .spinner {
+    width: 18px; height: 18px;
+    margin-right: 6px;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity .15s ease;
+    animation: spin .6s linear infinite;
+  }
+  .spinner.on { opacity: 1; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .clear-btn {
+    border: 0;
+    background: var(--hover);
+    color: var(--text-muted);
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: none;
+    place-items: center;
+    margin-right: 2px;
+  }
+  .clear-btn.on { display: grid; }
+  .clear-btn:hover { color: var(--text); }
+
+  /* ---------- Category nav ---------- */
+  nav.categories {
+    position: sticky;
+    top: 62px;
+    z-index: 30;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cat-inner::-webkit-scrollbar { height: 6px; }
+  .cat-inner::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+  .cat-pill {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 999px;
+    font: inherit;
+    font-size: .86rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s ease, border-color .15s ease, transform .1s ease;
+  }
+  .cat-pill:hover { border-color: var(--accent); }
+  .cat-pill:active { transform: scale(.96); }
+  .cat-pill:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .cat-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .cat-pill .emoji { font-size: 1rem; }
+
+  /* ---------- Main ---------- */
+  main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 8px 20px 80px;
+  }
+  section.emoji-section { margin-top: 30px; scroll-margin-top: 120px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 0 12px;
+  }
+  .section-head h2 {
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .section-head .count {
+    font-size: .8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .section-head .clear-recent {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: .8rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+  }
+  .section-head .clear-recent:hover { color: var(--text); background: var(--hover); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+    gap: 6px;
+  }
+
+  .emoji-btn {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    display: grid;
+    place-items: center;
+    font-size: 1.7rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    padding: 0;
+    transition: background .12s ease, transform .08s ease, border-color .12s ease;
+  }
+  .emoji-btn:hover {
+    background: var(--hover);
+    transform: scale(1.12);
+    border-color: var(--border-strong);
+    z-index: 2;
+  }
+  .emoji-btn:active { transform: scale(1.0); }
+  .emoji-btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    z-index: 3;
+  }
+  .emoji-btn.copied { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+  .emoji-btn .flag-img {
+    width: 1.6rem;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.12);
+    display: block;
+    pointer-events: none;
+  }
+
+  /* Copied tooltip */
+  .emoji-btn .tip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--text);
+    color: var(--bg);
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s ease, transform .15s ease;
+    z-index: 5;
+  }
+  .emoji-btn .tip::after {
+    content: "";
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--text);
+  }
+  .emoji-btn.copied .tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+  .empty .big { font-size: 2.6rem; margin-bottom: 8px; }
+  .empty.hidden { display: none; }
+
+  /* Toast for keyboard / general feedback */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: var(--bg);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: .9rem;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 100;
+  }
+  .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  footer {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 20px;
+    color: var(--text-muted);
+    font-size: .82rem;
+    text-align: center;
+  }
+  footer .seo-intro {
+    max-width: 720px;
+    margin: 34px auto 14px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+    text-align: left;
+    line-height: 1.7;
+  }
+  footer .seo-intro strong { color: var(--text); }
+  footer .footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    margin: 26px 0 10px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  footer .footer-links a,
+  footer .footer-links span {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: .86rem;
+    font-weight: 600;
+    padding: 4px 2px;
+    border-radius: 6px;
+  }
+  footer .footer-links a:hover { color: var(--text); text-decoration: underline; }
+  footer .footer-links a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  footer .copyright { text-align: center; font-size: .8rem; margin: 0; }
+  footer .seo-block {
+    max-width: 720px;
+    margin: 34px auto 0;
+    text-align: left;
+    line-height: 1.7;
+  }
+  footer .seo-block h2 {
+    font-size: 1.05rem;
+    color: var(--text);
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+  footer .seo-block h3 {
+    font-size: .92rem;
+    color: var(--text);
+    margin: 18px 0 4px;
+  }
+  footer .seo-block p { margin: 0 0 12px; }
+  footer .seo-block ol { margin: 0 0 12px; padding-left: 20px; }
+  footer .seo-block li { margin-bottom: 7px; }
+  footer .seo-block strong { color: var(--text); }
+
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is this emoji keyboard free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every emoji is free to copy, with no sign-up, no download, and no limit on how many you use." }
+    },
+    {
+      "@type": "Question",
+      "name": "How many emojis are there?",
+      "acceptedAnswer": { "@type": "Answer", "text": "This page has 1,353 emojis across eight categories: smileys and people, animals and nature, food and drink, activity, travel and places, objects, symbols, and flags." }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does an emoji look different on my phone?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Each platform draws its own artwork. Apple, Google, Microsoft, and Samsung all have slightly different designs for the same emoji, so a smiley copied here may look a little different on an iPhone than on an Android phone. The meaning stays the same." }
+    },
+    {
+      "@type": "Question",
+      "name": "Why do some emojis show as a box or two letters?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A blank box means your device's font does not include that emoji yet, usually because it is a newer one. Country flags can also appear as two letters on Windows, since Windows does not ship flag artwork. Updating your operating system normally fixes this." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this work on iPhone and Android?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. The page works in any modern browser on desktop, tablet, and mobile. Tap an emoji to copy it, then paste it wherever you are typing." }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to install anything?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Everything runs in your browser. There is nothing to install and no account to create." }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+  <header class="site">
+    <div class="header-inner">
+      <a class="logo" href="#" id="logoLink" aria-label="Emoji Paste, back to top">
+        <img src="data:image/png;base64,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VpKS4sLMGVNx4w3XYNJE1olT/Ik+2f2i/st2vKLY1JM9tsPDI05d2og0BQOcClIsomXqXKcqYFcFXBoQkMHw2hSQ8Ogy+L0uUeuXOFRvoMid3CreC/tomJNj7v1pWZPEC4VenvROKEYA+fXrMKT8A/SvXIjM2mJkrLgfqjszrs/j7bsT9dM/gJo5Arah18Ey4BJoeTMhFPY7JNKatRuxbfsuU8ved8/tSd/ek5VVmP/ex6aWnTF9ckwh8lhpGUpKylBUXIKSklKUHCtDZWUV3O4mNHk8wf82NcHr9cHhsMPpcMDhdMDpcCA1NQUFQwZi4oRxGDVqGAb079el2sGePfuxcvUaU8te/82r0Csrky+mBMnNif6N8fGKYgZbom77orcL3DXUBrODImyu0vHxMT8PZIR6N+7C7E/3YOLqQ3Fdr//OHKjXXAYldQAPMhFRjMGWoyIQdUNZVoEbB1kRw0hfOObmxBDROOkag4+vvRZl/eM4heqFY2G56W6GWiKiOGGwJepmZmVruLPAhgxLbAXBhznjWdQMTcUnN1wCjysON7rkpQMPzAMsKg8sEVGcsIiLqAvKswukh8anTdGC3+c7gje4WePwdrS0SaLaxxvHTB27gXl44ce3464/vQFnvbmbj+TgLIg/3gFkpvCAEhEx2BKd3Wb01jAhM3E9eesrAzzIMajunYmXH7oF33jtX8gvinJopAvHQPzgUiDDyQNJRMRgS0SxqPcD26t1HogYVeVk4aWHb8GInYUYs3Uv+pSeQHZZ5akPtChA7zRg8mDg0onAmP48eEREDLZEFA/rKgNgEUJ8SFXB3gnDsXfC8FN+9+g4Ow8QEVGS8eYxoh6kwiOx7iTLEIiIiMGWiLoxjw7886gPnEWXiIgYbImoW/u/Eh8qORICEREx2BJRd7aoLIC9dRy3loiIzm68eYzoLObWgfeKfDjUwFBLREQMtkTUTR1rknj3qA+1fpYfEBERgy0RdTMSwOEGA5urdOyu1TmsFxERMdgSUfdy3CNxuEHHxkodVbxBjIiIGGyJqKsKSMBnAH5Dwm8Evz/hMXCowcCBeh1NnEiMiIiIwZaoK/qwxI8PS/w8EERERFHgcF9ERERExGBLRERERMRgS0RERETEYEtERERExGBLRERERAy2REREREQMtkREREREDLZERERERAy2RERERMRgS0RERETEYEtERERExGBLRERERMRgS0REREQMtkREREREDLZERERERAy2REREREQMtkRERETEYEtERERExGBLRERERMRgS0RERETEYEtERERExGBLRERERAy2REREREQMtkREREREDLZERERERAy2RERERMRgS0RERETEYEtERERExGBLRERERMRgS0REREQ9h5bMJ3t0nJ1HnIiIiIgSgj22RERERMRgS0RERETEYEtERERExGBLRERERMRgS0REREQMtkREREREDLZERERERAy2REREREQMtkRERETEYEtERERExGBLRERERMRgS0RERETEYEtEREREPYxmZqHcnP48ckRERETUpbDHloiIiIgYbImIiIiIGGyJiIiIiBhsiYiIiIgYbImIiIiIwZaIiIiIiMGWiIiIiIjBloiIiIiIwZaIiIiIGGyJiIiIiBhsiYiIiIgYbImIiIiIIvf/HGMvt2rw/pEAAAAASUVORK5CYII=" alt="Emoji Paste" width="347" height="105" />
+      </a>
+      <span class="spacer"></span>
+      <button class="theme-toggle" id="themeToggle" aria-pressed="false" title="Switch theme">
+        <span class="icon" id="themeIcon" aria-hidden="true">🌙</span>
+        <span id="themeLabel">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="search-wrap">
+    <div class="search-box" role="search">
+      <span class="search-icon emoji" aria-hidden="true">🔍</span>
+      <input id="search" type="text" placeholder="Search emojis… (e.g. heart, cat, pizza)"
+             autocomplete="off" spellcheck="false" aria-label="Search emojis" />
+      <div class="spinner" id="spinner" aria-hidden="true"></div>
+      <button class="clear-btn" id="clearBtn" aria-label="Clear search">✕</button>
+    </div>
+  </div>
+
+  <nav class="categories" aria-label="Emoji categories">
+    <div class="cat-inner" id="catNav"></div>
+  </nav>
+
+  <main id="main">
+    <h1 class="visually-hidden">Emoji Paste: Copy and Emoji Pastes in One Click</h1>
+    <p class="empty hidden" id="emptyState">
+      <span class="big emoji" aria-hidden="true">🤔</span><br>
+      No emojis match that search. Try another word.
+    </p>
+  </main>
+
+  <footer>
+
+    <section class="seo-block" aria-labelledby="howto-heading">
+      <h2 id="howto-heading">How to copy and paste emojis</h2>
+      <ol>
+        <li><strong>Find your emoji.</strong> Type a word in the search bar (try "heart", "fire", or "pizza"), or pick a category to browse.</li>
+        <li><strong>Click it once.</strong> A "Copied!" tooltip confirms the emoji is on your clipboard.</li>
+        <li><strong>Paste it anywhere.</strong> Press Ctrl + V on Windows, or Command + V on a Mac.</li>
+      </ol>
+      <p>
+        Your recent picks are saved automatically, so the emojis you use most stay one click away
+        the next time you visit.
+      </p>
+    </section>
+
+    <section class="seo-block" aria-labelledby="where-heading">
+      <h2 id="where-heading">Where you can use these emojis</h2>
+      <p>
+        These are standard Unicode emojis, so they work almost everywhere you can type: Instagram
+        captions and bios, TikTok comments, X posts, Facebook, Discord, Slack, WhatsApp, iMessage,
+        Gmail, Google Docs, Microsoft Word, YouTube titles, and even file names. Because you are
+        copying real characters rather than pictures, they keep working when someone else views
+        your post on a different phone or computer.
+      </p>
+    </section>
+
+    <section class="seo-block" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Frequently asked questions</h2>
+
+      <h3>Is this emoji keyboard free?</h3>
+      <p>Yes. Every emoji is free to copy, with no sign-up, no download, and no limit on how many you use.</p>
+
+      <h3>How many emojis are there?</h3>
+      <p>
+        This page has 1,353 emojis across eight categories: smileys &amp; people, animals &amp; nature,
+        food &amp; drink, activity, travel &amp; places, objects, symbols, and flags.
+      </p>
+
+      <h3>Why does an emoji look different on my phone?</h3>
+      <p>
+        Each platform draws its own artwork. Apple, Google, Microsoft, and Samsung all have slightly
+        different designs for the same emoji, so a smiley copied here may look a little different on
+        an iPhone than on an Android phone. The meaning stays the same.
+      </p>
+
+      <h3>Why do some emojis show as a box or two letters?</h3>
+      <p>
+        A blank box means your device's font does not include that emoji yet, usually because it is a
+        newer one. Country flags can also appear as two letters on Windows, since Windows does not
+        ship flag artwork. Updating your operating system normally fixes this.
+      </p>
+
+      <h3>Does this work on iPhone and Android?</h3>
+      <p>
+        Yes. The page works in any modern browser on desktop, tablet, and mobile. Tap an emoji to copy
+        it, then paste it wherever you are typing.
+      </p>
+
+      <h3>Do I need to install anything?</h3>
+      <p>No. Everything runs in your browser. There is nothing to install and no account to create.</p>
+    </section>
+    <p class="seo-intro">
+      <strong>Emoji Paste</strong> is a free online emoji keyboard for copying and pasting emojis in one click.
+      Type in the search bar to find any emoji by name, or browse categories like smileys &amp; people,
+      animals &amp; nature, food &amp; drink, activities, travel, objects, symbols, and flags. Click an emoji to
+      copy it to your clipboard, then paste it into your posts, messages, emails, or documents. It works right
+      in your browser on desktop and mobile, with no app, sign-up, or download required.
+    </p>
+    <p>Tip: use <kbd>Tab</kbd> / arrow keys to move between emojis and <kbd>Enter</kbd> to copy.</p>
+
+    <nav class="footer-links" aria-label="Footer">
+      <a href="#faq-heading">FAQ</a>
+      <span>About</span>
+      <span>Privacy</span>
+    </nav>
+    <p class="copyright">&copy; 2026 Emoji Paste</p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="visually-hidden" role="status" aria-live="polite" id="srStatus"></div>
+
+<script>
+/* =========================================================
+   EMOJI DATA: [emoji, name] per category.
+   Names power both search and screen-reader aria-labels.
+   ========================================================= */
+const EMOJI_DATA = {
+  "Smileys & People": {
+    icon: "😀",
+    items: [
+      ["😀","grinning face"],["😃","smiling face with big eyes"],["😄","smiling face with open mouth"],
+      ["😁","beaming face with smiling eyes"],["😆","grinning squinting face"],["😅","grinning face with sweat"],
+      ["🤣","rolling on the floor laughing"],["😂","face with tears of joy"],["🙂","slightly smiling face"],
+      ["🙃","upside-down face"],["😉","winking face"],["😊","smiling face with smiling eyes"],
+      ["😇","smiling face with halo"],["🥰","smiling face with hearts"],["😍","smiling face with heart-eyes"],
+      ["🤩","star-struck"],["😘","face blowing a kiss"],["😗","kissing face"],["😚","kissing face with closed eyes"],
+      ["😙","kissing face with smiling eyes"],["😋","face savoring food"],
+      ["😛","face with tongue"],["😜","winking face with tongue"],["🤪","zany face"],["😝","squinting face with tongue"],
+      ["🤑","money-mouth face"],["🤗","hugging face"],["🤭","face with hand over mouth"],["🤫","shushing face"],
+      ["🤔","thinking face"],["🤐","zipper-mouth face"],["🤨","face with raised eyebrow"],["😐","neutral face"],
+      ["😑","expressionless face"],["😶","face without mouth"],["😏","smirking face"],["😒","unamused face"],
+      ["🙄","face with rolling eyes"],["😬","grimacing face"],["🤥","lying face"],["😌","relieved face"],
+      ["😔","pensive face"],["😪","sleepy face"],["🤤","drooling face"],["😴","sleeping face"],["😷","face with medical mask"],
+      ["🤒","face with thermometer"],["🤕","face with head-bandage"],["🤢","nauseated face"],["🤮","face vomiting"],
+      ["🤧","sneezing face"],["🥵","hot face"],["🥶","cold face"],["🥴","woozy face"],["😵","dizzy face"],
+      ["🤯","exploding head"],["🤠","cowboy hat face"],["🥳","partying face"],
+      ["😎","smiling face with sunglasses"],["🤓","nerd face"],["🧐","face with monocle"],["😕","confused face"],
+      ["😟","worried face"],["🙁","slightly frowning face"],["😮","face with open mouth"],["😯","hushed face"],
+      ["😲","astonished face"],["😳","flushed face"],["🥺","pleading face"],["😦","frowning face with open mouth"],
+      ["😧","anguished face"],["😨","fearful face"],["😰","anxious face with sweat"],["😥","sad but relieved face"],
+      ["😢","crying face"],["😭","loudly crying face"],["😱","face screaming in fear"],["😖","confounded face"],
+      ["😣","persevering face"],["😞","disappointed face"],["😓","downcast face with sweat"],["😩","weary face"],
+      ["😫","tired face"],["🥱","yawning face"],["😤","face with steam from nose"],["😡","enraged face"],
+      ["😠","angry face"],["🤬","face with symbols on mouth"],["😈","smiling face with horns"],["👿","angry face with horns"],
+      ["💀","skull"],["💩","pile of poo"],["🤡","clown face"],["👹","ogre"],["👺","goblin"],["👻","ghost"],["🎃","jack-o-lantern"],
+      ["👽","alien"],["👾","alien monster"],["🤖","robot"],["🎭","performing arts"],["😺","grinning cat"],["😸","grinning cat with smiling eyes"],
+      ["😹","cat with tears of joy"],["😻","smiling cat with heart-eyes"],["😼","cat with wry smile"],
+      ["😽","kissing cat"],["🙀","weary cat"],["😿","crying cat"],["😾","pouting cat"],
+      ["👋","waving hand"],["🤚","raised back of hand"],["🖐️","hand with fingers splayed"],["✋","raised hand"],
+      ["🖖","vulcan salute"],["👌","OK hand"],["🤏","pinching hand"],["✌️","victory hand"],
+      ["🤞","crossed fingers"],["🤟","love-you gesture"],["🤘","sign of the horns"],["🤙","call me hand"],
+      ["👈","backhand index pointing left"],["👉","backhand index pointing right"],["👆","backhand index pointing up"],
+      ["🖕","middle finger"],["👇","backhand index pointing down"],["☝️","index pointing up"],["👍","thumbs up"],
+      ["👎","thumbs down"],["✊","raised fist"],["👊","oncoming fist"],["🤛","left-facing fist"],["🤜","right-facing fist"],
+      ["👏","clapping hands"],["🙌","raising hands"],["👐","open hands"],["🤲","palms up together"],["🤝","handshake"],
+      ["🙏","folded hands"],["✍️","writing hand"],["💅","nail polish"],["🤳","selfie"],["💪","flexed biceps"],
+      ["👶","baby"],["🧒","child"],["👦","boy"],["👧","girl"],["🧑","person"],["👨","man"],["👩","woman"],
+      ["🧓","older person"],["👴","old man"],["👵","old woman"],["🧔","person with beard"],["👮","police officer"],
+      ["🕵️","detective"],["💂","guard"],["👷","construction worker"],["🤴","prince"],["👸","princess"],
+      ["👳","person with turban"],["👲","person with skullcap"],["🧕","woman with headscarf"],["🤵","person in tuxedo"],
+      ["👰","person with veil"],["🤰","pregnant woman"],["🤱","breast-feeding"],["👼","baby angel"],
+      ["🎅","Santa Claus"],["🤶","Mrs. Claus"],["🦸","superhero"],["🦹","supervillain"],["🧙","mage"],
+      ["🧚","fairy"],["🧛","vampire"],["🧜","merperson"],["🧝","elf"],["🧞","genie"],["🧟","zombie"],
+      ["💆","person getting massage"],["💇","person getting haircut"],["🚶","person walking"],["🏃","person running"],
+      ["💃","woman dancing"],["🕺","man dancing"],["👯","people with bunny ears"],["🧖","person in steamy room"],
+      ["🤺","person fencing"],["🏇","horse racing"],["⛷️","skier"],["🏂","snowboarder"],["🏌️","person golfing"],
+      ["🏄","person surfing"],["🚣","person rowing boat"],["🏊","person swimming"],["⛹️","person bouncing ball"],
+      ["🏋️","person lifting weights"],["🚴","person biking"],["🤸","person cartwheeling"],["🤼","people wrestling"],
+      ["🤽","person playing water polo"],["🤾","person playing handball"],["🤹","person juggling"],["🧘","person in lotus position"],
+      ["🛀","person taking bath"],["🛌","person in bed"],["👭","women holding hands"],["👫","woman and man holding hands"],
+      ["👬","men holding hands"],["💏","kiss"],["💑","couple with heart"],["👪","family"],["🗣️","speaking head"],
+      ["👤","bust in silhouette"],["👥","busts in silhouette"],["👣","footprints"]
+    ]
+  },
+  "Animals & Nature": {
+    icon: "🐻",
+    items: [
+      ["🐶","dog face"],["🐱","cat face"],["🐭","mouse face"],["🐹","hamster"],["🐰","rabbit face"],
+      ["🦊","fox"],["🐻","bear"],["🐼","panda"],["🐨","koala"],["🐯","tiger face"],["🦁","lion"],
+      ["🐮","cow face"],["🐷","pig face"],["🐽","pig nose"],["🐸","frog"],["🐵","monkey face"],
+      ["🙈","see-no-evil monkey"],["🙉","hear-no-evil monkey"],["🙊","speak-no-evil monkey"],["🐒","monkey"],
+      ["🐔","chicken"],["🐧","penguin"],["🐦","bird"],["🐤","baby chick"],["🐣","hatching chick"],
+      ["🐥","front-facing baby chick"],["🦆","duck"],["🦅","eagle"],["🦉","owl"],["🦇","bat"],["🐺","wolf"],
+      ["🐗","boar"],["🐴","horse face"],["🦄","unicorn"],["🐝","honeybee"],["🐛","bug"],["🦋","butterfly"],
+      ["🐌","snail"],["🐞","lady beetle"],["🐜","ant"],["🦟","mosquito"],["🦗","cricket"],["🕷️","spider"],
+      ["🕸️","spider web"],["🦂","scorpion"],["🐢","turtle"],["🐍","snake"],["🦎","lizard"],["🦖","T-Rex"],
+      ["🦕","sauropod"],["🐙","octopus"],["🦑","squid"],["🦐","shrimp"],["🦞","lobster"],["🦀","crab"],
+      ["🐡","blowfish"],["🐠","tropical fish"],["🐟","fish"],["🐬","dolphin"],["🐳","spouting whale"],
+      ["🐋","whale"],["🦈","shark"],["🐊","crocodile"],["🐅","tiger"],["🐆","leopard"],["🦓","zebra"],
+      ["🦍","gorilla"],["🦧","orangutan"],["🐘","elephant"],["🦛","hippopotamus"],["🦏","rhinoceros"],
+      ["🐪","camel"],["🐫","two-hump camel"],["🦒","giraffe"],["🦘","kangaroo"],["🐃","water buffalo"],
+      ["🐂","ox"],["🐄","cow"],["🐎","horse"],["🐖","pig"],["🐏","ram"],["🐑","ewe"],["🦙","llama"],
+      ["🐐","goat"],["🦌","deer"],["🐕","dog"],["🐩","poodle"],["🦮","guide dog"],["🐈","cat"],["🐓","rooster"],
+      ["🦃","turkey"],["🦚","peacock"],["🦜","parrot"],["🦢","swan"],["🦩","flamingo"],["🕊️","dove"],
+      ["🐇","rabbit"],["🦝","raccoon"],["🦨","skunk"],["🦡","badger"],["🦦","otter"],["🦥","sloth"],
+      ["🐁","mouse"],["🐀","rat"],["🐿️","chipmunk"],["🦔","hedgehog"],["🐾","paw prints"],["🐉","dragon"],
+      ["🐲","dragon face"],["🌵","cactus"],["🎄","Christmas tree"],["🌲","evergreen tree"],["🌳","deciduous tree"],
+      ["🌴","palm tree"],["🌱","seedling"],["🌿","herb"],["☘️","shamrock"],["🍀","four leaf clover"],
+      ["🎍","pine decoration"],["🎋","tanabata tree"],["🍃","leaf fluttering in wind"],["🍂","fallen leaf"],
+      ["🍁","maple leaf"],["🍄","mushroom"],["🌾","sheaf of rice"],["💐","bouquet"],["🌷","tulip"],
+      ["🌹","rose"],["🥀","wilted flower"],["🌺","hibiscus"],["🌸","cherry blossom"],["🌼","blossom"],
+      ["🌻","sunflower"],["🌞","sun with face"],["🌝","full moon face"],["🌛","first quarter moon face"],
+      ["🌜","last quarter moon face"],["🌚","new moon face"],["🌕","full moon"],["🌖","waning gibbous moon"],
+      ["🌗","last quarter moon"],["🌘","waning crescent moon"],["🌑","new moon"],["🌒","waxing crescent moon"],
+      ["🌓","first quarter moon"],["🌔","waxing gibbous moon"],["🌙","crescent moon"],["🌎","globe americas"],
+      ["🌍","globe europe-africa"],["🌏","globe asia-australia"],["💫","dizzy"],["⭐","star"],["🌟","glowing star"],
+      ["✨","sparkles"],["⚡","high voltage"],["☄️","comet"],["💥","collision"],["🔥","fire"],["🌪️","tornado"],
+      ["🌈","rainbow"],["☀️","sun"],["🌤️","sun behind small cloud"],["⛅","sun behind cloud"],["🌥️","sun behind large cloud"],
+      ["☁️","cloud"],["🌦️","sun behind rain cloud"],["🌧️","cloud with rain"],["⛈️","cloud with lightning and rain"],
+      ["🌩️","cloud with lightning"],["🌨️","cloud with snow"],["❄️","snowflake"],["☃️","snowman"],["⛄","snowman without snow"],
+      ["🌬️","wind face"],["💨","dashing away"],["💧","droplet"],["💦","sweat droplets"],["🌊","water wave"],
+      ["☂️","umbrella"],["☔","umbrella with rain drops"]
+    ]
+  },
+  "Food & Drink": {
+    icon: "🍔",
+    items: [
+      ["🍏","green apple"],["🍎","red apple"],["🍐","pear"],["🍊","tangerine"],["🍋","lemon"],["🍌","banana"],
+      ["🍉","watermelon"],["🍇","grapes"],["🍓","strawberry"],["🫐","blueberries"],["🍈","melon"],["🍒","cherries"],
+      ["🍑","peach"],["🥭","mango"],["🍍","pineapple"],["🥥","coconut"],["🥝","kiwi fruit"],["🍅","tomato"],
+      ["🍆","eggplant"],["🥑","avocado"],["🥦","broccoli"],["🥬","leafy green"],["🥒","cucumber"],["🌶️","hot pepper"],
+      ["🌽","ear of corn"],["🥕","carrot"],["🧄","garlic"],["🧅","onion"],["🥔","potato"],["🍠","roasted sweet potato"],
+      ["🥐","croissant"],["🥯","bagel"],["🍞","bread"],["🥖","baguette"],["🥨","pretzel"],["🧀","cheese wedge"],
+      ["🥚","egg"],["🍳","cooking"],["🧈","butter"],["🥞","pancakes"],["🧇","waffle"],["🥓","bacon"],["🥩","cut of meat"],
+      ["🍗","poultry leg"],["🍖","meat on bone"],["🌭","hot dog"],["🍔","hamburger"],["🍟","french fries"],
+      ["🍕","pizza"],["🥪","sandwich"],["🥙","stuffed flatbread"],["🧆","falafel"],["🌮","taco"],["🌯","burrito"],
+      ["🥗","green salad"],["🥘","shallow pan of food"],["🍝","spaghetti"],["🍜","steaming bowl"],["🍲","pot of food"],
+      ["🍛","curry rice"],["🍣","sushi"],["🍱","bento box"],["🥟","dumpling"],["🍤","fried shrimp"],["🍙","rice ball"],
+      ["🍚","cooked rice"],["🍘","rice cracker"],["🍥","fish cake with swirl"],["🥠","fortune cookie"],["🍢","oden"],
+      ["🍡","dango"],["🍧","shaved ice"],["🍨","ice cream"],["🍦","soft ice cream"],["🥧","pie"],["🧁","cupcake"],
+      ["🍰","shortcake"],["🎂","birthday cake"],["🍮","custard"],["🍭","lollipop"],["🍬","candy"],["🍫","chocolate bar"],
+      ["🍿","popcorn"],["🍩","doughnut"],["🍪","cookie"],["🌰","chestnut"],["🥜","peanuts"],["🍯","honey pot"],
+      ["🥛","glass of milk"],["🍼","baby bottle"],["☕","hot beverage"],["🍵","teacup without handle"],["🧃","beverage box"],
+      ["🥤","cup with straw"],["🍶","sake"],["🍺","beer mug"],["🍻","clinking beer mugs"],
+      ["🥂","clinking glasses"],["🍷","wine glass"],["🥃","tumbler glass"],["🍸","cocktail glass"],["🍹","tropical drink"],
+      ["🧉","mate"],["🍾","bottle with popping cork"],["🧊","ice"],["🥄","spoon"],["🍴","fork and knife"],
+      ["🍽️","fork and knife with plate"],["🥣","bowl with spoon"],["🥡","takeout box"],["🧂","salt"]
+    ]
+  },
+  "Activity": {
+    icon: "⚽",
+    items: [
+      ["⚽","soccer ball"],["🏀","basketball"],["🏈","american football"],["⚾","baseball"],["🥎","softball"],
+      ["🎾","tennis"],["🏐","volleyball"],["🏉","rugby football"],["🥏","flying disc"],["🎱","pool 8 ball"],
+      ["🪀","yo-yo"],["🏓","ping pong"],["🏸","badminton"],["🏒","ice hockey"],["🏑","field hockey"],
+      ["🥍","lacrosse"],["🏏","cricket game"],["🥅","goal net"],["⛳","flag in hole"],["🪁","kite"],
+      ["🏹","bow and arrow"],["🎣","fishing pole"],["🤿","diving mask"],["🥊","boxing glove"],["🥋","martial arts uniform"],
+      ["🎽","running shirt"],["🛹","skateboard"],["🛷","sled"],["⛸️","ice skate"],["🥌","curling stone"],
+      ["🎿","skis"],["⛷️","skier"],["🏂","snowboarder"],["🏋️","weight lifter"],["🤼","wrestlers"],
+      ["🤸","cartwheel"],["⛹️","bouncing ball"],["🤺","fencer"],["🤾","handball"],["🏌️","golfer"],
+      ["🏇","horse racing"],["🧘","lotus position"],["🏄","surfer"],["🏊","swimmer"],["🤽","water polo"],
+      ["🚣","rowboat"],["🧗","person climbing"],["🚵","mountain biker"],["🚴","cyclist"],["🏆","trophy"],
+      ["🥇","1st place medal"],["🥈","2nd place medal"],["🥉","3rd place medal"],["🏅","sports medal"],
+      ["🎖️","military medal"],["🏵️","rosette"],["🎗️","reminder ribbon"],["🎫","ticket"],["🎟️","admission tickets"],
+      ["🎪","circus tent"],["🤹","juggler"],["🎭","performing arts"],["🩰","ballet shoes"],["🎨","artist palette"],
+      ["🎬","clapper board"],["🎤","microphone"],["🎧","headphone"],["🎼","musical score"],["🎹","musical keyboard"],
+      ["🥁","drum"],["🎷","saxophone"],["🎺","trumpet"],["🎸","guitar"],["🪕","banjo"],["🎻","violin"],
+      ["🎲","game die"],["♟️","chess pawn"],["🎯","direct hit"],["🎳","bowling"],["🎮","video game"],
+      ["🎰","slot machine"],["🧩","puzzle piece"]
+    ]
+  },
+  "Travel & Places": {
+    icon: "✈️",
+    items: [
+      ["🚗","automobile"],["🚕","taxi"],["🚙","sport utility vehicle"],["🚌","bus"],["🚎","trolleybus"],
+      ["🏎️","racing car"],["🚓","police car"],["🚑","ambulance"],["🚒","fire engine"],["🚐","minibus"],
+      ["🚚","delivery truck"],["🚛","articulated lorry"],["🚜","tractor"],["🛴","kick scooter"],["🚲","bicycle"],
+      ["🛵","motor scooter"],["🏍️","motorcycle"],["🛺","auto rickshaw"],["🚨","police car light"],["🚔","oncoming police car"],
+      ["🚍","oncoming bus"],["🚘","oncoming automobile"],["🚖","oncoming taxi"],["🚡","aerial tramway"],["🚠","mountain cableway"],
+      ["🚟","suspension railway"],["🚃","railway car"],["🚋","tram car"],["🚞","mountain railway"],["🚝","monorail"],
+      ["🚄","high-speed train"],["🚅","bullet train"],["🚈","light rail"],["🚂","locomotive"],["🚆","train"],
+      ["🚇","metro"],["🚊","tram"],["🚉","station"],["✈️","airplane"],["🛫","airplane departure"],["🛬","airplane arrival"],
+      ["🛩️","small airplane"],["💺","seat"],["🚁","helicopter"],["🚟","rail"],["🚀","rocket"],["🛸","flying saucer"],
+      ["🚢","ship"],["⛵","sailboat"],["🚤","speedboat"],["🛥️","motor boat"],["🛳️","passenger ship"],["⛴️","ferry"],
+      ["🚣","rowboat"],["⚓","anchor"],["⛽","fuel pump"],["🚧","construction"],["🚦","vertical traffic light"],
+      ["🚥","horizontal traffic light"],["🗺️","world map"],["🗿","moai"],["🗽","Statue of Liberty"],["🗼","Tokyo tower"],
+      ["🏰","castle"],["🏯","Japanese castle"],["🏟️","stadium"],["🎡","ferris wheel"],["🎢","roller coaster"],
+      ["🎠","carousel horse"],["⛲","fountain"],["⛱️","umbrella on ground"],["🏖️","beach with umbrella"],["🏝️","desert island"],
+      ["🏜️","desert"],["🌋","volcano"],["⛰️","mountain"],["🏔️","snow-capped mountain"],["🗻","mount fuji"],
+      ["🏕️","camping"],["⛺","tent"],["🏠","house"],["🏡","house with garden"],["🏘️","houses"],["🏚️","derelict house"],
+      ["🏗️","building construction"],["🏭","factory"],["🏢","office building"],["🏬","department store"],["🏣","Japanese post office"],
+      ["🏤","post office"],["🏥","hospital"],["🏦","bank"],["🏨","hotel"],["🏪","convenience store"],["🏫","school"],
+      ["🏩","love hotel"],["💒","wedding"],["🏛️","classical building"],["⛪","church"],["🕌","mosque"],["🕍","synagogue"],
+      ["🛕","hindu temple"],["🕋","kaaba"],["⛩️","shinto shrine"],["🌁","foggy"],["🌃","night with stars"],
+      ["🏙️","cityscape"],["🌄","sunrise over mountains"],["🌅","sunrise"],["🌆","cityscape at dusk"],["🌇","sunset"],
+      ["🌉","bridge at night"],["🎇","fireworks"],["🎆","sparkler"],["🌌","milky way"]
+    ]
+  },
+  "Objects": {
+    icon: "💡",
+    items: [
+      ["⌚","watch"],["📱","mobile phone"],["📲","mobile phone with arrow"],["💻","laptop"],["⌨️","keyboard"],
+      ["🖥️","desktop computer"],["🖨️","printer"],["🖱️","computer mouse"],["🕹️","joystick"],["💽","computer disk"],
+      ["💾","floppy disk"],["💿","optical disk"],["📀","dvd"],["📼","videocassette"],["📷","camera"],["📸","camera with flash"],
+      ["📹","video camera"],["🎥","movie camera"],["📽️","film projector"],["🎞️","film frames"],["📞","telephone receiver"],
+      ["☎️","telephone"],["📟","pager"],["📠","fax machine"],["📺","television"],["📻","radio"],["🎙️","studio microphone"],
+      ["🧭","compass"],["⏱️","stopwatch"],["⏲️","timer clock"],["⏰","alarm clock"],["🕰️","mantelpiece clock"],
+      ["⌛","hourglass done"],["⏳","hourglass not done"],["📡","satellite antenna"],["🔋","battery"],["🔌","electric plug"],
+      ["💡","light bulb"],["🔦","flashlight"],["🕯️","candle"],["🧯","fire extinguisher"],["🛢️","oil drum"],
+      ["💸","money with wings"],["💵","dollar banknote"],["💴","yen banknote"],["💶","euro banknote"],["💷","pound banknote"],
+      ["💰","money bag"],["💳","credit card"],["💎","gem stone"],["⚖️","balance scale"],["🧰","toolbox"],
+      ["🔧","wrench"],["🔨","hammer"],["⚒️","hammer and pick"],["🛠️","hammer and wrench"],["⛏️","pick"],["🔩","nut and bolt"],
+      ["⚙️","gear"],["🧱","brick"],["⛓️","chains"],["🧲","magnet"],["🔫","water pistol"],["💣","bomb"],
+      ["🧨","firecracker"],["🔪","kitchen knife"],["🗡️","dagger"],["⚔️","crossed swords"],["🛡️","shield"],
+      ["🚬","cigarette"],["⚰️","coffin"],["⚱️","funeral urn"],["🏺","amphora"],["🔮","crystal ball"],["📿","prayer beads"],
+      ["🧿","nazar amulet"],["💈","barber pole"],["⚗️","alembic"],["🔭","telescope"],["🔬","microscope"],
+      ["🕳️","hole"],["💊","pill"],["💉","syringe"],["🩸","drop of blood"],["🧬","dna"],["🦠","microbe"],
+      ["🧫","petri dish"],["🧪","test tube"],["🌡️","thermometer"],["🧹","broom"],["🧺","basket"],["🧻","roll of paper"],
+      ["🚽","toilet"],["🚿","shower"],["🛁","bathtub"],["🧼","soap"],["🪥","toothbrush"],["🧽","sponge"],
+      ["🧴","lotion bottle"],["🛎️","bellhop bell"],["🔑","key"],["🗝️","old key"],["🚪","door"],["🪑","chair"],
+      ["🛋️","couch and lamp"],["🛏️","bed"],["🧸","teddy bear"],["🖼️","framed picture"],["🛍️","shopping bags"],
+      ["🛒","shopping cart"],["🎁","wrapped gift"],["🎈","balloon"],["🎏","carp streamer"],["🎀","ribbon"],
+      ["🎊","confetti ball"],["🎉","party popper"],["🎎","Japanese dolls"],["🏮","red paper lantern"],["🎐","wind chime"],
+      ["✉️","envelope"],["📩","envelope with arrow"],["📨","incoming envelope"],["📧","e-mail"],["💌","love letter"],
+      ["📮","postbox"],["📪","closed mailbox with lowered flag"],["📫","closed mailbox with raised flag"],["📬","open mailbox with raised flag"],
+      ["📭","open mailbox with lowered flag"],["📦","package"],["🏷️","label"],["📄","page facing up"],["📃","page with curl"],
+      ["📑","bookmark tabs"],["📊","bar chart"],["📈","chart increasing"],["📉","chart decreasing"],["📇","card index"],
+      ["🗒️","spiral notepad"],["🗓️","spiral calendar"],["📆","tear-off calendar"],["📅","calendar"],["🗑️","wastebasket"],
+      ["📇","index"],["📋","clipboard"],["📌","pushpin"],["📍","round pushpin"],["📎","paperclip"],["🖇️","linked paperclips"],
+      ["📏","straight ruler"],["📐","triangular ruler"],["✂️","scissors"],["🖊️","pen"],["🖋️","fountain pen"],
+      ["✒️","black nib"],["🖌️","paintbrush"],["🖍️","crayon"],["📝","memo"],["✏️","pencil"],["🔍","magnifying glass tilted left"],
+      ["🔎","magnifying glass tilted right"],["🔏","locked with pen"],["🔐","locked with key"],["🔒","locked"],["🔓","unlocked"],
+      ["📚","books"],["📖","open book"],["📗","green book"],["📘","blue book"],["📙","orange book"],["📕","closed book"],
+      ["📓","notebook"],["📔","notebook with decorative cover"],["📒","ledger"]
+    ]
+  },
+  "Symbols": {
+    icon: "❤️",
+    items: [
+      ["❤️","red heart"],["🧡","orange heart"],["💛","yellow heart"],["💚","green heart"],["💙","blue heart"],
+      ["💜","purple heart"],["🖤","black heart"],["🤍","white heart"],["🤎","brown heart"],["💔","broken heart"],
+      ["❣️","heart exclamation"],["💕","two hearts"],["💞","revolving hearts"],["💓","beating heart"],["💗","growing heart"],
+      ["💖","sparkling heart"],["💘","heart with arrow"],["💝","heart with ribbon"],["💟","heart decoration"],["☮️","peace symbol"],
+      ["✝️","latin cross"],["☪️","star and crescent"],["🕉️","om"],["☸️","wheel of dharma"],["✡️","star of David"],
+      ["🔯","dotted six-pointed star"],["🕎","menorah"],["☯️","yin yang"],["☦️","orthodox cross"],["🛐","place of worship"],
+      ["⛎","ophiuchus"],["♈","aries"],["♉","taurus"],["♊","gemini"],["♋","cancer"],["♌","leo"],["♍","virgo"],
+      ["♎","libra"],["♏","scorpio"],["♐","sagittarius"],["♑","capricorn"],["♒","aquarius"],["♓","pisces"],
+      ["🆔","ID button"],["⚛️","atom symbol"],["🉑","Japanese acceptable button"],["☢️","radioactive"],["☣️","biohazard"],
+      ["📴","mobile phone off"],["📳","vibration mode"],["🈶","Japanese not free of charge button"],["🈚","Japanese free of charge button"],
+      ["🈸","Japanese application button"],["🈺","Japanese open for business button"],["🈷️","Japanese monthly amount button"],["✴️","eight-pointed star"],
+      ["🆚","VS button"],["🉐","Japanese bargain button"],["㊙️","Japanese secret button"],["㊗️","Japanese congratulations button"],
+      ["🈴","Japanese passing grade button"],["🈵","Japanese no vacancy button"],["🈹","Japanese discount button"],["🈲","Japanese prohibited button"],
+      ["🅰️","A button (blood type)"],["🅱️","B button (blood type)"],["🆎","AB button (blood type)"],["🆑","CL button"],
+      ["🅾️","O button (blood type)"],["🆘","SOS button"],["❌","cross mark"],["⭕","hollow red circle"],["🛑","stop sign"],
+      ["⛔","no entry"],["📛","name badge"],["🚫","prohibited"],["💯","hundred points"],["💢","anger symbol"],
+      ["♨️","hot springs"],["🚷","no pedestrians"],["🚯","no littering"],["🚳","no bicycles"],["🚱","non-potable water"],
+      ["🔞","no one under eighteen"],["📵","no mobile phones"],["🚭","no smoking"],["❗","red exclamation mark"],["❕","white exclamation mark"],
+      ["❓","red question mark"],["❔","white question mark"],["‼️","double exclamation mark"],["⁉️","exclamation question mark"],
+      ["🔅","dim button"],["🔆","bright button"],["〽️","part alternation mark"],["⚠️","warning"],["🚸","children crossing"],
+      ["🔱","trident emblem"],["⚜️","fleur-de-lis"],["🔰","Japanese symbol for beginner"],["♻️","recycling symbol"],["✅","check mark button"],
+      ["🈯","Japanese reserved button"],["💹","chart increasing with yen"],["❇️","sparkle"],["✳️","eight-spoked asterisk"],["❎","cross mark button"],
+      ["🌐","globe with meridians"],["💠","diamond with a dot"],["Ⓜ️","circled M"],["🌀","cyclone"],["💤","zzz"],
+      ["🏧","ATM sign"],["🚾","water closet"],["♿","wheelchair symbol"],["🅿️","P button"],["🈳","Japanese vacancy button"],
+      ["🈂️","Japanese service charge button"],["🛂","passport control"],["🛃","customs"],["🛄","baggage claim"],["🛅","left luggage"],
+      ["🚹","men's room"],["🚺","women's room"],["🚼","baby symbol"],["🚻","restroom"],["🚮","litter in bin sign"],
+      ["🎦","cinema"],["📶","antenna bars"],["🈁","Japanese here button"],["🔣","input symbols"],["ℹ️","information"],
+      ["🔤","input latin letters"],["🔡","input lowercase"],["🔠","input uppercase"],["🆖","NG button"],["🆗","OK button"],
+      ["🆙","UP! button"],["🆒","COOL button"],["🆕","NEW button"],["🆓","FREE button"],["0️⃣","keycap 0"],["1️⃣","keycap 1"],
+      ["2️⃣","keycap 2"],["3️⃣","keycap 3"],["4️⃣","keycap 4"],["5️⃣","keycap 5"],["6️⃣","keycap 6"],["7️⃣","keycap 7"],
+      ["8️⃣","keycap 8"],["9️⃣","keycap 9"],["🔟","keycap 10"],["🔢","input numbers"],["#️⃣","keycap hash"],["*️⃣","keycap asterisk"],
+      ["⏏️","eject button"],["▶️","play button"],["⏸️","pause button"],["⏯️","play or pause button"],["⏹️","stop button"],
+      ["⏺️","record button"],["⏭️","next track button"],["⏮️","last track button"],["⏩","fast-forward button"],["⏪","fast reverse button"],
+      ["⏫","fast up button"],["⏬","fast down button"],["◀️","reverse button"],["🔼","upwards button"],["🔽","downwards button"],
+      ["➡️","right arrow"],["⬅️","left arrow"],["⬆️","up arrow"],["⬇️","down arrow"],["↗️","up-right arrow"],["↘️","down-right arrow"],
+      ["↙️","down-left arrow"],["↖️","up-left arrow"],["↕️","up-down arrow"],["↔️","left-right arrow"],["↪️","left arrow curving right"],
+      ["↩️","right arrow curving left"],["⤴️","right arrow curving up"],["⤵️","right arrow curving down"],["🔀","shuffle tracks button"],
+      ["🔁","repeat button"],["🔂","repeat single button"],["🔄","counterclockwise arrows button"],["🔃","clockwise vertical arrows"],
+      ["🎵","musical note"],["🎶","musical notes"],["➕","plus"],["➖","minus"],["➗","divide"],["✖️","multiply"],
+      ["♾️","infinity"],["💲","heavy dollar sign"],["💱","currency exchange"],["™️","trade mark"],["©️","copyright"],
+      ["®️","registered"],["👁️‍🗨️","eye in speech bubble"],["🔚","END arrow"],["🔙","BACK arrow"],["🔛","ON! arrow"],
+      ["🔝","TOP arrow"],["🔜","SOON arrow"],["✔️","check mark"],["☑️","check box with check"],["🔘","radio button"],
+      ["🔴","red circle"],["🟠","orange circle"],["🟡","yellow circle"],["🟢","green circle"],["🔵","blue circle"],
+      ["🟣","purple circle"],["⚫","black circle"],["⚪","white circle"],["🟤","brown circle"],["🔺","red triangle pointed up"],
+      ["🔻","red triangle pointed down"],["🔸","small orange diamond"],["🔹","small blue diamond"],["🔶","large orange diamond"],
+      ["🔷","large blue diamond"],["🔳","white square button"],["🔲","black square button"],["▪️","black small square"],
+      ["▫️","white small square"],["◾","black medium-small square"],["◽","white medium-small square"],["◼️","black medium square"],
+      ["◻️","white medium square"],["⬛","black large square"],["⬜","white large square"],["🟥","red square"],["🟧","orange square"],
+      ["🟨","yellow square"],["🟩","green square"],["🟦","blue square"],["🟪","purple square"],["🟫","brown square"],["🤌","pinched fingers"],
+      ["🔈","speaker low volume"],["🔇","muted speaker"],["🔉","speaker medium volume"],["🔊","speaker high volume"],
+      ["🔔","bell"],["🔕","bell with slash"],["📣","megaphone"],["📢","loudspeaker"],["💬","speech balloon"],["💭","thought balloon"],
+      ["🗯️","right anger bubble"],["♠️","spade suit"],["♣️","club suit"],["♥️","heart suit"],["♦️","diamond suit"],
+      ["🃏","joker"],["🀄","mahjong red dragon"],["🎴","flower playing cards"],["🕐","one o'clock"],["🕑","two o'clock"],
+      ["🕒","three o'clock"],["🕓","four o'clock"],["🕔","five o'clock"],["🕕","six o'clock"]
+    ]
+  },
+  "Flags": {
+    icon: "🏳️",
+    items: [
+      ["🏳️","white flag"],["🏴","black flag"],["🏁","chequered flag"],["🚩","triangular flag"],["🏳️‍🌈","rainbow flag"],
+      ["🏳️‍⚧️","transgender flag"],["🏴‍☠️","pirate flag"],["🇺🇳","United Nations"],["🇦🇫","Afghanistan"],["🇦🇱","Albania"],
+      ["🇩🇿","Algeria"],["🇦🇩","Andorra"],["🇦🇴","Angola"],["🇦🇬","Antigua & Barbuda"],["🇦🇷","Argentina"],
+      ["🇦🇲","Armenia"],["🇦🇺","Australia"],["🇦🇹","Austria"],["🇦🇿","Azerbaijan"],["🇧🇸","Bahamas"],
+      ["🇧🇭","Bahrain"],["🇧🇩","Bangladesh"],["🇧🇧","Barbados"],["🇧🇾","Belarus"],["🇧🇪","Belgium"],
+      ["🇧🇿","Belize"],["🇧🇯","Benin"],["🇧🇹","Bhutan"],["🇧🇴","Bolivia"],["🇧🇦","Bosnia & Herzegovina"],
+      ["🇧🇼","Botswana"],["🇧🇷","Brazil"],["🇧🇳","Brunei"],["🇧🇬","Bulgaria"],["🇧🇫","Burkina Faso"],
+      ["🇧🇮","Burundi"],["🇰🇭","Cambodia"],["🇨🇲","Cameroon"],["🇨🇦","Canada"],["🇨🇻","Cape Verde"],
+      ["🇨🇫","Central African Republic"],["🇹🇩","Chad"],["🇨🇱","Chile"],["🇨🇳","China"],["🇨🇴","Colombia"],
+      ["🇰🇲","Comoros"],["🇨🇬","Congo - Brazzaville"],["🇨🇩","Congo - Kinshasa"],["🇨🇷","Costa Rica"],["🇨🇮","Côte d'Ivoire"],
+      ["🇭🇷","Croatia"],["🇨🇺","Cuba"],["🇨🇾","Cyprus"],["🇨🇿","Czechia"],["🇩🇰","Denmark"],
+      ["🇩🇯","Djibouti"],["🇩🇲","Dominica"],["🇩🇴","Dominican Republic"],["🇪🇨","Ecuador"],["🇪🇬","Egypt"],
+      ["🇸🇻","El Salvador"],["🇬🇶","Equatorial Guinea"],["🇪🇷","Eritrea"],["🇪🇪","Estonia"],["🇸🇿","Eswatini"],
+      ["🇪🇹","Ethiopia"],["🇫🇯","Fiji"],["🇫🇮","Finland"],["🇫🇷","France"],["🇬🇦","Gabon"],
+      ["🇬🇲","Gambia"],["🇬🇪","Georgia"],["🇩🇪","Germany"],["🇬🇭","Ghana"],["🇬🇷","Greece"],
+      ["🇬🇩","Grenada"],["🇬🇹","Guatemala"],["🇬🇳","Guinea"],["🇬🇼","Guinea-Bissau"],["🇬🇾","Guyana"],
+      ["🇭🇹","Haiti"],["🇭🇳","Honduras"],["🇭🇺","Hungary"],["🇮🇸","Iceland"],["🇮🇳","India"],
+      ["🇮🇩","Indonesia"],["🇮🇷","Iran"],["🇮🇶","Iraq"],["🇮🇪","Ireland"],["🇮🇱","Israel"],
+      ["🇮🇹","Italy"],["🇯🇲","Jamaica"],["🇯🇵","Japan"],["🇯🇴","Jordan"],["🇰🇿","Kazakhstan"],
+      ["🇰🇪","Kenya"],["🇰🇮","Kiribati"],["🇰🇼","Kuwait"],["🇰🇬","Kyrgyzstan"],["🇱🇦","Laos"],
+      ["🇱🇻","Latvia"],["🇱🇧","Lebanon"],["🇱🇸","Lesotho"],["🇱🇷","Liberia"],["🇱🇾","Libya"],
+      ["🇱🇮","Liechtenstein"],["🇱🇹","Lithuania"],["🇱🇺","Luxembourg"],["🇲🇬","Madagascar"],["🇲🇼","Malawi"],
+      ["🇲🇾","Malaysia"],["🇲🇻","Maldives"],["🇲🇱","Mali"],["🇲🇹","Malta"],["🇲🇭","Marshall Islands"],
+      ["🇲🇷","Mauritania"],["🇲🇺","Mauritius"],["🇲🇽","Mexico"],["🇫🇲","Micronesia"],["🇲🇩","Moldova"],
+      ["🇲🇨","Monaco"],["🇲🇳","Mongolia"],["🇲🇪","Montenegro"],["🇲🇦","Morocco"],["🇲🇿","Mozambique"],
+      ["🇲🇲","Myanmar"],["🇳🇦","Namibia"],["🇳🇷","Nauru"],["🇳🇵","Nepal"],["🇳🇱","Netherlands"],
+      ["🇳🇿","New Zealand"],["🇳🇮","Nicaragua"],["🇳🇪","Niger"],["🇳🇬","Nigeria"],["🇰🇵","North Korea"],
+      ["🇲🇰","North Macedonia"],["🇳🇴","Norway"],["🇴🇲","Oman"],["🇵🇰","Pakistan"],["🇵🇼","Palau"],
+      ["🇵🇸","Palestinian Territories"],["🇵🇦","Panama"],["🇵🇬","Papua New Guinea"],["🇵🇾","Paraguay"],["🇵🇪","Peru"],
+      ["🇵🇭","Philippines"],["🇵🇱","Poland"],["🇵🇹","Portugal"],["🇶🇦","Qatar"],["🇷🇴","Romania"],
+      ["🇷🇺","Russia"],["🇷🇼","Rwanda"],["🇰🇳","St. Kitts & Nevis"],["🇱🇨","St. Lucia"],["🇻🇨","St. Vincent & Grenadines"],
+      ["🇼🇸","Samoa"],["🇸🇲","San Marino"],["🇸🇹","São Tomé & Príncipe"],["🇸🇦","Saudi Arabia"],["🇸🇳","Senegal"],
+      ["🇷🇸","Serbia"],["🇸🇨","Seychelles"],["🇸🇱","Sierra Leone"],["🇸🇬","Singapore"],["🇸🇰","Slovakia"],
+      ["🇸🇮","Slovenia"],["🇸🇧","Solomon Islands"],["🇸🇴","Somalia"],["🇿🇦","South Africa"],["🇰🇷","South Korea"],
+      ["🇸🇸","South Sudan"],["🇪🇸","Spain"],["🇱🇰","Sri Lanka"],["🇸🇩","Sudan"],["🇸🇷","Suriname"],
+      ["🇸🇪","Sweden"],["🇨🇭","Switzerland"],["🇸🇾","Syria"],["🇹🇼","Taiwan"],["🇹🇯","Tajikistan"],
+      ["🇹🇿","Tanzania"],["🇹🇭","Thailand"],["🇹🇱","Timor-Leste"],["🇹🇬","Togo"],["🇹🇴","Tonga"],
+      ["🇹🇹","Trinidad & Tobago"],["🇹🇳","Tunisia"],["🇹🇷","Turkey"],["🇹🇲","Turkmenistan"],["🇹🇻","Tuvalu"],
+      ["🇺🇬","Uganda"],["🇺🇦","Ukraine"],["🇦🇪","United Arab Emirates"],["🇬🇧","United Kingdom"],["🏴󠁧󠁢󠁥󠁮󠁧󠁿","England"],
+      ["🏴󠁧󠁢󠁳󠁣󠁴󠁿","Scotland"],["🏴󠁧󠁢󠁷󠁬󠁳󠁿","Wales"],["🇺🇸","United States"],["🇺🇾","Uruguay"],["🇺🇿","Uzbekistan"],
+      ["🇻🇺","Vanuatu"],["🇻🇦","Vatican City"],["🇻🇪","Venezuela"],["🇻🇳","Vietnam"],["🇾🇪","Yemen"],
+      ["🇿🇲","Zambia"],["🇿🇼","Zimbabwe"]
+    ]
+  }
+};
+
+const FLAG_IMG = {
+  "England": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEzIiBoZWlnaHQ9IjM0MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgNTEzIDM0MiI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTAgMGg1MTN2MzQySDB6Ii8+PHBhdGggZmlsbD0iI0Q4MDAyNyIgZD0iTTAgMTM2aDUxM3Y3MEgweiIvPjxwYXRoIGZpbGw9IiNEODAwMjciIGQ9Ik0yMjEuNSAwaDcwdjM0MmgtNzB6Ii8+PC9zdmc+",
+  "Scotland": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEzIiBoZWlnaHQ9IjM0MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgNTEzIDM0MiI+PHBhdGggZmlsbD0iIzAwNUVCOCIgZD0iTTAgMGg1MTN2MzQySDB6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTAgMzAyLjFWMzQyaDU5LjlsMTk2LjYtMTMxLjFMNDUzLjEgMzQySDUxM3YtMzkuOUwzMTYuNCAxNzEgNTEzIDM5LjlWMGgtNTkuOUwyNTYuNSAxMzEuMSA1OS45IDBIMHYzOS45TDE5Ni43IDE3MXoiLz48L3N2Zz4=",
+  "Wales": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEzIiBoZWlnaHQ9IjM0MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgNTEzIDM0MiI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTAgMGg1MTN2MTcxSDB6Ii8+PHBhdGggZmlsbD0iIzUyOUUzQyIgZD0iTTAgMTcxaDUxM3YxNzFIMHoiLz48cGF0aCBmaWxsPSIjRDExQzFDIiBkPSJtMjAxIDI1OS44IDI4LjItNC44LTIxLjgtMTAuMyAxNC45LTguNHMyNS4yIDIxLjIgMjUuMiAxNC40YzAtNy4zIDIzLjctNC4xIDIyLjctMTQuNC0xLjMtMTQuMS0yNi4yLTEtMzAuNi0xOC43LTIuNS05LjktMTAuMy04LjYtMTAuMy04LjZsLTI1LjEgOC42LTEyLjUgMTguNy02LjItMTguN3MtMTQuNiAxMS45LTE5LjUgMTguN2MtNS4yIDcuMy0xMC43IDIzLjUtMTAuNyAyMy41bDI1LjYgMTAuNy0zNy4zLTYuNi0yNy4yIDYuNi0xNi43IDQuNiA3LjMtNy43LTE1LTcuNiAxNS05LTcuMy02LjEgMzIuMyA2LjFzMTEuOC0xLjIgMTYuMy02LjFjNS42LTYuMiAxMC4xLTI3LjEgMTAuMS0yNy4xbC0xNC44LTguNi0xMS42IDIxcy04LTE5LjktMTUuNi0zMWMtNS43LTguMy0yNC4zLTI3LjMtMjQuMy0yNy4zbC0yNCAxMi42IDEzLjQtMjYuN3MxMC42LTkuMyAzLjktMTguOGMtNi44LTkuNS0xMi40LTMwLjktMTIuNC0zMC45czE0LjEgMjQuNCAxOS4yIDIyLjVjNy4yLTIuNy05LTI1IDAtMjguOSA2LjUtMi45IDcuNiAyNS41IDcuNiAyNS41bDcuMy0xMy45djE3LjNzLTQuMyAyMC43IDMgMzNjNy4yIDEyLjMgMjguNyAyMC45IDI4LjcgMjAuOXMtNS42LTEyLjMgMC0zNmMzLjgtMTYgMTcuMi00My40IDIzLjYtNTIuMSAzLjMtNC42LTI2LjcgMTctMjYuNyAxN3YtMTdsLTI4LjYtMi45LTcuMyA4LjMtMTguMy0zMEwxMDQgODMuMWgzNC42bC02LjctOC4zSDEwNHM1LjktMTIuMSAzNC42LTEyLjFsMTMuNi05LjJzMTguNi41IDI5IC45YzkuMy40IDI2LjEtMTEuNSAyNi4xLTExLjVsNC43IDExLjUtMTEgMTcuMyAxMS4xIDExLjQtNC43IDcgOC4xIDExLjVIMjAxbDExLjEgMTcuOS0xMS4xLTYuMyA2LjQgMTcuMy02LjQgMTcuOCAyOC4yLTkuNXMwLTI1LjYgMTAuMy0zNy4yQzI3MS4xIDY5LjIgMzIyLjYgNDMgMzIyLjYgNDNzLTIuNyAyMy41IDQuOSAyNS40YzExLjEgMi43IDU5LjQtMTkuNCA1OS40LTE5LjRzLTI5IDMxLjMtMjMuMSAzNC4xYzMuMiAxLjUgOC41IDcgOC41IDdzLTI1LjEgMjAuNS0yOS4zIDI5LjNjLTQuMiA4LjggNi4xIDE5LjQgNi4xIDE5LjRzLTIxLjcgMC0zMi41IDkuNWMzMi41IDAgNTkuMSAxNS40IDc0LjggNCAxMC41LTcuNi0zNy43LTIuOS0zMS40LTIxLjkgMi40LTcuMSA4LjUtMTUuMiAyMi42LTE3LjNzMTkuMSA2LjMgMTkuMSA2LjNsNy42LTExLjVoLTIyLjRsNDAuNi0zOS42IDUuMyA1MS4xLTEzLjctMTEuNC02LjIgMTkuMmMxNC42IDQ0LjYtNTIuOCA1NC4xLTUyLjggNTQuMWw0MS42IDI3LjgtMTQuOCA0LjItNC4yIDQxLjcgMTkuMSAxNS41LTI1LTYuNi00OS4yIDExLjIgOS44LTE1LjMtMjAuNiA0LjEgMTMuNy0xMy4xLTEzLjctNi4xIDE3LjYtNC45IDIyLjEgMTUuMnMxMS0xNC4yIDEyLjItMjEuN2MxLjMtNy44LTQuOC0yNC4yLTQuOC0yNC4ycy0zMi42LS43LTQ0LjEtMy41LTE4LjItMTEuOS0xOC4yLTExLjlsLTEzLjEgMTUuNHM0NS41IDE3LjEgMzQuMSAyNC4yYy0yLjYgMS43LTE1LjctMy4yLTE1LjctMy4ycy0yMi40IDI2LjItMzYuOCAyOS43Yy02LjUgMS42IDE4LjMgMTAuNyAxOC4zIDEwLjdzLTIxLjItMy40LTMyLTYuNmMtMTEuMy0zLjQtNDQuNCA2LjYtNDQuNCA2LjZsLTExLTEwLjd6TTM4My45IDEzOGMzLjEgMCA1LjctMi42IDUuNy01LjdzLTIuNi01LjctNS43LTUuNy01LjcgMi42LTUuNyA1LjcgMi41IDUuNyA1LjcgNS43eiIvPjwvc3ZnPg=="
+};
+
+/* =========================================================
+   STATE + SAFE STORAGE (works when deployed; degrades gracefully)
+   ========================================================= */
+const RECENT_KEY = "copyemoji.recent";
+const THEME_KEY = "copyemoji.theme";
+const MAX_RECENT = 24;
+
+const store = {
+  get(key, fallback) {
+    try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); }
+    catch { return fallback; }
+  },
+  set(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch { /* private mode / artifact preview */ }
+  }
+};
+
+let recent = store.get(RECENT_KEY, []);       // array of emoji chars
+const nameOf = {};                            // emoji char -> name lookup
+for (const cat in EMOJI_DATA) for (const [ch, nm] of EMOJI_DATA[cat].items) nameOf[ch] = nm;
+
+/* =========================================================
+   BUILD THE PAGE
+   ========================================================= */
+const main = document.getElementById("main");
+const catNav = document.getElementById("catNav");
+const emptyState = document.getElementById("emptyState");
+const searchInput = document.getElementById("search");
+const spinner = document.getElementById("spinner");
+const clearBtn = document.getElementById("clearBtn");
+const toast = document.getElementById("toast");
+const srStatus = document.getElementById("srStatus");
+
+// Category pills
+const categories = Object.keys(EMOJI_DATA);
+function buildNav() {
+  catNav.innerHTML = "";
+  const recentPill = pill("recent", "🕘", "Recent");
+  recentPill.dataset.target = "section-recent";
+  catNav.appendChild(recentPill);
+  categories.forEach((cat, i) => {
+    const p = pill("cat-" + i, EMOJI_DATA[cat].icon, cat);
+    p.dataset.target = "section-" + i;
+    catNav.appendChild(p);
+  });
+}
+function pill(id, icon, label) {
+  const b = document.createElement("button");
+  b.className = "cat-pill";
+  b.type = "button";
+  b.innerHTML = `<span class="emoji" aria-hidden="true">${icon}</span>${label}`;
+  b.addEventListener("click", () => {
+    const el = document.getElementById(b.dataset.target);
+    // While the page smooth-scrolls, sections pass under the observer and it
+    // would keep re-centring the nav on whatever scrolls by. Lock it so the
+    // pill the user actually tapped stays put and stays tappable.
+    navLockUntil = Date.now() + 900;
+    catNav.querySelectorAll(".cat-pill").forEach(p => p.classList.toggle("active", p === b));
+    scrollPillIntoView(b, true);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  return b;
+}
+
+let navLockUntil = 0;
+
+// Horizontally centre a category pill inside the scrolling nav bar.
+function scrollPillIntoView(pillEl, force) {
+  if (!pillEl) return;
+  if (!force && Date.now() < navLockUntil) return;
+  const navR = catNav.getBoundingClientRect();
+  const pR = pillEl.getBoundingClientRect();
+  // Already comfortably visible? Leave it alone.
+  if (pR.left >= navR.left + 8 && pR.right <= navR.right - 8) return;
+  const maxScroll = catNav.scrollWidth - catNav.clientWidth;
+  const target = pillEl.offsetLeft - (catNav.clientWidth - pillEl.offsetWidth) / 2;
+  catNav.scrollTo({
+    left: Math.min(Math.max(0, target), Math.max(0, maxScroll)),
+    behavior: "smooth"
+  });
+}
+
+// Build a single emoji button
+function emojiButton(ch, name) {
+  const btn = document.createElement("button");
+  btn.className = "emoji-btn emoji";
+  btn.type = "button";
+  btn.setAttribute("aria-label", "Copy " + name);
+  btn.dataset.name = name.toLowerCase();
+  btn.dataset.char = ch;
+  if (FLAG_IMG[name]) {
+    // These subdivision flags (England/Scotland/Wales) don't render on
+    // Windows/Chrome, so show a proper flag image instead of the black fallback.
+    const img = document.createElement("img");
+    img.src = FLAG_IMG[name];
+    img.alt = name;
+    img.className = "flag-img";
+    img.draggable = false;
+    img.setAttribute("aria-hidden", "true");
+    btn.appendChild(img);
+  } else {
+    btn.appendChild(document.createTextNode(ch));
+  }
+  const tip = document.createElement("span");
+  tip.className = "tip";
+  tip.textContent = "Copied!";
+  tip.setAttribute("aria-hidden", "true");
+  btn.appendChild(tip);
+  btn.addEventListener("click", () => copyEmoji(ch, name, btn));
+  return btn;
+}
+
+// Build all category sections + recent section
+function buildSections() {
+  main.querySelectorAll("section.emoji-section").forEach(s => s.remove());
+
+  // Recent section
+  const recentSection = document.createElement("section");
+  recentSection.className = "emoji-section";
+  recentSection.id = "section-recent";
+  recentSection.innerHTML = `
+    <div class="section-head">
+      <h2>Recently used</h2>
+      <span class="count" id="recentCount"></span>
+      <button class="clear-recent" id="clearRecent" type="button">Clear</button>
+    </div>
+    <div class="grid" id="recentGrid"></div>`;
+  main.insertBefore(recentSection, emptyState);
+  recentSection.querySelector("#clearRecent").addEventListener("click", () => {
+    recent = [];
+    store.set(RECENT_KEY, recent);
+    renderRecent();
+    showToast("Recent emojis cleared");
+  });
+
+  // Category sections
+  categories.forEach((cat, i) => {
+    const s = document.createElement("section");
+    s.className = "emoji-section";
+    s.id = "section-" + i;
+    s.dataset.category = cat;
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    EMOJI_DATA[cat].items.forEach(([ch, nm]) => grid.appendChild(emojiButton(ch, nm)));
+    const head = document.createElement("div");
+    head.className = "section-head";
+    head.innerHTML = `<h2><span class="emoji" aria-hidden="true">${EMOJI_DATA[cat].icon}</span> ${cat}</h2>
+                      <span class="count">${EMOJI_DATA[cat].items.length}</span>`;
+    s.appendChild(head);
+    s.appendChild(grid);
+    main.insertBefore(s, emptyState);
+  });
+
+  renderRecent();
+}
+
+function renderRecent() {
+  const section = document.getElementById("section-recent");
+  const grid = document.getElementById("recentGrid");
+  const count = document.getElementById("recentCount");
+  grid.innerHTML = "";
+  if (!recent.length) {
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "";
+  count.textContent = recent.length;
+  recent.forEach(ch => grid.appendChild(emojiButton(ch, nameOf[ch] || "emoji")));
+}
+
+/* =========================================================
+   COPY
+   ========================================================= */
+// Rasterize an SVG data URL into a PNG blob (apps accept PNG, not SVG, on paste).
+function svgToPngBlob(svgDataUrl, w = 240, h = 160) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error("toBlob failed")), "image/png");
+    };
+    img.onerror = reject;
+    img.src = svgDataUrl;
+  });
+}
+
+async function copyEmoji(ch, name, btn) {
+  let ok = false;
+
+  // England / Scotland / Wales.
+  // Copy the flag emoji as TEXT first, the same reliable path as every other
+  // emoji, done while the click's user-gesture is still fresh, so a click
+  // always copies something (even in a sandboxed preview or a local file).
+  // Then, as a bonus, try to upgrade the clipboard to a real flag IMAGE so it
+  // pastes as a picture in docs and chats (works on an https-hosted page).
+  if (FLAG_IMG[name]) {
+    let ok = false;
+    try { await navigator.clipboard.writeText(ch); ok = true; }
+    catch { ok = legacyCopy(ch); }
+
+    let asImage = false;
+    try {
+      if (window.isSecureContext && typeof ClipboardItem !== "undefined" &&
+          navigator.clipboard && navigator.clipboard.write) {
+        const pngPromise = svgToPngBlob(FLAG_IMG[name]);
+        await navigator.clipboard.write([ new ClipboardItem({ "image/png": pngPromise }) ]);
+        asImage = true; ok = true;
+      }
+    } catch (e) { /* image upgrade unavailable, the text copy already worked */ }
+
+    if (ok) {
+      flashCopied(btn);
+      addRecent(ch);
+      srStatus.textContent = "Copied " + name + (asImage ? " flag image" : " flag");
+    } else {
+      showToast("Couldn't copy. Press Ctrl/Cmd + C");
+    }
+    return;
+  }
+
+  // Everything else: copy the emoji character as text.
+  try {
+    await navigator.clipboard.writeText(ch);
+    ok = true;
+  } catch {
+    ok = legacyCopy(ch); // fallback for older browsers / http
+  }
+  if (ok) {
+    flashCopied(btn);
+    addRecent(ch);
+    srStatus.textContent = "Copied " + name;
+  } else {
+    showToast("Couldn't copy. Press Ctrl/Cmd + C");
+  }
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch { ok = false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function flashCopied(btn) {
+  btn.classList.add("copied");
+  setTimeout(() => btn.classList.remove("copied"), 1000);
+}
+
+function addRecent(ch) {
+  recent = [ch, ...recent.filter(x => x !== ch)].slice(0, MAX_RECENT);
+  store.set(RECENT_KEY, recent);
+  renderRecent();
+}
+
+/* =========================================================
+   SEARCH (real-time, with brief spinner indicator)
+   ========================================================= */
+let searchTimer = null;
+function onSearch() {
+  const q = searchInput.value.trim().toLowerCase();
+  clearBtn.classList.toggle("on", q.length > 0);
+  spinner.classList.add("on");
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    applyFilter(q);
+    spinner.classList.remove("on");
+  }, 120);
+}
+
+function applyFilter(q) {
+  let anyVisible = false;
+  const sections = main.querySelectorAll("section.emoji-section");
+  sections.forEach(section => {
+    if (section.id === "section-recent") {
+      // Hide recent while searching for a cleaner result view
+      section.style.display = q ? "none" : (recent.length ? "" : "none");
+      return;
+    }
+    let visibleInSection = 0;
+    section.querySelectorAll(".emoji-btn").forEach(btn => {
+      const match = !q || btn.dataset.name.includes(q) || btn.dataset.char === q;
+      btn.style.display = match ? "" : "none";
+      if (match) visibleInSection++;
+    });
+    section.style.display = visibleInSection ? "" : "none";
+    if (visibleInSection) anyVisible = true;
+  });
+  emptyState.classList.toggle("hidden", anyVisible || !q);
+}
+
+searchInput.addEventListener("input", onSearch);
+clearBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  searchInput.focus();
+  onSearch();
+});
+
+/* =========================================================
+   THEME
+   ========================================================= */
+const themeToggle = document.getElementById("themeToggle");
+const themeIcon = document.getElementById("themeIcon");
+const themeLabel = document.getElementById("themeLabel");
+
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  const dark = theme === "dark";
+  themeIcon.textContent = dark ? "☀️" : "🌙";
+  themeLabel.textContent = dark ? "Light" : "Dark";
+  themeToggle.setAttribute("aria-pressed", String(dark));
+  store.set(THEME_KEY, theme);
+}
+themeToggle.addEventListener("click", () => {
+  const now = document.documentElement.getAttribute("data-theme");
+  setTheme(now === "dark" ? "light" : "dark");
+});
+
+/* =========================================================
+   KEYBOARD NAVIGATION (arrow keys move between emojis)
+   ========================================================= */
+main.addEventListener("keydown", (e) => {
+  if (!["ArrowRight","ArrowLeft","ArrowUp","ArrowDown"].includes(e.key)) return;
+  const active = document.activeElement;
+  if (!active || !active.classList.contains("emoji-btn")) return;
+
+  const grid = active.closest(".grid");
+  if (!grid) return;
+  // offsetParent is null for hidden buttons, so this respects search filtering.
+  const buttons = [...grid.querySelectorAll(".emoji-btn")].filter(b => b.offsetParent !== null);
+  const idx = buttons.indexOf(active);
+  if (idx === -1) return;
+
+  let target = null;
+
+  if (e.key === "ArrowRight") {
+    target = buttons[idx + 1];
+  } else if (e.key === "ArrowLeft") {
+    target = buttons[idx - 1];
+  } else {
+    // Up/Down: use real on-screen geometry instead of guessing the column
+    // count, so movement is always straight even when buttons stretch to fill.
+    const rect = active.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const dir = e.key === "ArrowDown" ? 1 : -1;
+    let best = null, bestScore = Infinity;
+
+    for (const b of buttons) {
+      if (b === active) continue;
+      const r = b.getBoundingClientRect();
+      const dy = (r.top - rect.top) * dir;
+      if (dy <= 4) continue;                                  // must be on a row in that direction
+      const dx = Math.abs(r.left + r.width / 2 - centerX);    // how far off the column
+      const score = dy * 1000 + dx;                           // nearest row wins, then nearest column
+      if (score < bestScore) { bestScore = score; best = b; }
+    }
+    target = best;
+  }
+
+  if (target) {
+    e.preventDefault();
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }
+});
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+let toastTimer = null;
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("on"), 1600);
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+(function init() {
+  const savedTheme = store.get(THEME_KEY, null);
+  if (savedTheme) setTheme(savedTheme);
+  else setTheme(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+  buildNav();
+  buildSections();
+
+  // The logo scrolls back to the top of this page. It must never navigate to a
+  // filename: if the file is saved under a different name (index (1).html and
+  // similar), a filename link would land on a browser error page.
+  const logoLink = document.getElementById("logoLink");
+  if (logoLink) {
+    logoLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  // Highlight the category pill for whichever section is in view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        if (Date.now() < navLockUntil) return;
+        let activePill = null;
+        catNav.querySelectorAll(".cat-pill").forEach(p => {
+          const on = p.dataset.target === id;
+          p.classList.toggle("active", on);
+          if (on) activePill = p;
+        });
+        scrollPillIntoView(activePill);
+      }
+    });
+  }, { rootMargin: "-140px 0px -70% 0px", threshold: 0 });
+  main.querySelectorAll("section.emoji-section").forEach(s => observer.observe(s));
+})();
+</script>
+</body>
+</html>
